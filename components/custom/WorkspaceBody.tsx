@@ -1,13 +1,28 @@
 'use client'
 import { UserDetailContext } from '@/context/userDetailContext'
 import Image from 'next/image';
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
 import EmptyWorkspace from './EmptyWorkspace';
+import axios from 'axios';
 
-const WorkspaceBody = () => {
+const WorkspaceBody = async () => {
     const { userDetail } = useContext(UserDetailContext);
+    const [token, setToken] = useState<string | null>();
+
+    useEffect(() => {
+        getGitHubUserToken()
+    }, [])
+    // get user cookie token
+    const getGitHubUserToken = async () => {
+        const result = await axios.get("/api/github/token");
+        setToken(result.data.token);
+    }
+    // add repo controller
+    const onAddRepo = async () => {
+        window.location.href = "/api/github";
+    }
     return (
         <div>
             <div className='flex items-center justify-between'>
@@ -26,8 +41,12 @@ const WorkspaceBody = () => {
                     />
                     <h2 className='text-xl font-semibold'>Connect Github and Add Repo</h2>
                 </div>
-                <Button variant={"outline"} className='bg-blue-400 cursor-pointer'>Install</Button>
-                <Button variant={"outline"} className='bg-blue-400 cursor-pointer'>+ Add</Button>
+                {
+                    !token ?
+                        <Button variant={"outline"} onClick={onAddRepo} className='bg-blue-400 cursor-pointer'>Setup</Button>
+                        :
+                        <Button variant={"outline"} onClick={onAddRepo} className='bg-blue-400 cursor-pointer'>+ Add</Button>
+                }
             </Card>
             <Card>
                 <CardContent>

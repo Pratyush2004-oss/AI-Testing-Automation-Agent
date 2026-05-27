@@ -1,5 +1,5 @@
 'use client'
-import { UserDetailContext } from '@/context/userDetailContext'
+import { UserDetailContext } from '@/context/UserDetailContext'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 
@@ -11,10 +11,9 @@ const Provider = ({ children }: { children: React.ReactNode }) => {
     const createNewUser = async () => {
         const result = await axios.post(`/api/users`, {})
         setUserDetail(result.data.user)
-        console.log(result);
     }
     return (
-        <UserDetailContext.Provider value={{userDetail, setUserDetail}}>
+        <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
             <div>{children}</div>
         </UserDetailContext.Provider>
     )

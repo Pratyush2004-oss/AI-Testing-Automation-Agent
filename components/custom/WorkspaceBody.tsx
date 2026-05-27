@@ -1,13 +1,14 @@
 'use client'
-import { UserDetailContext } from '@/context/userDetailContext'
+import { UserDetailContext } from '@/context/UserDetailContext'
 import Image from 'next/image';
 import React, { useContext, useEffect, useState } from 'react'
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
 import EmptyWorkspace from './EmptyWorkspace';
 import axios from 'axios';
+import RepoDialog from './RepoDialog';
 
-const WorkspaceBody = async () => {
+const WorkspaceBody = () => {
     const { userDetail } = useContext(UserDetailContext);
     const [token, setToken] = useState<string | null>();
 
@@ -23,6 +24,8 @@ const WorkspaceBody = async () => {
     const onAddRepo = async () => {
         window.location.href = "/api/github";
     }
+
+    const handleRefreshPage = (refresh: boolean) => { };
     return (
         <div>
             <div className='flex items-center justify-between'>
@@ -45,7 +48,7 @@ const WorkspaceBody = async () => {
                     !token ?
                         <Button variant={"outline"} onClick={onAddRepo} className='bg-blue-400 cursor-pointer'>Setup</Button>
                         :
-                        <Button variant={"outline"} onClick={onAddRepo} className='bg-blue-400 cursor-pointer'>+ Add</Button>
+                        <RepoDialog setRefreshPage={handleRefreshPage} />
                 }
             </Card>
             <Card>

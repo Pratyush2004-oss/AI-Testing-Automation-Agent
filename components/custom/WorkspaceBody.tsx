@@ -7,25 +7,58 @@ import { Card, CardContent } from '../ui/card';
 import EmptyWorkspace from './EmptyWorkspace';
 import axios from 'axios';
 import RepoDialog from './RepoDialog';
+import { REPOTYPE, USERREPOTYPE } from '@/types';
+import LoadingSection from './LoadingSection';
+import UserRepoList from './UserRepoList';
 
 const WorkspaceBody = () => {
     const { userDetail } = useContext(UserDetailContext);
     const [token, setToken] = useState<string | null>();
+    const [isLoading, setisLoading] = useState(false)
+    const [userRepoList, setuserRepoList] = useState<USERREPOTYPE[]>([])
 
     useEffect(() => {
-        getGitHubUserToken()
+        getGitHubUserToken();
     }, [])
+
+    useEffect(() => {
+        userDetail && getUserRepoList();
+    }, [userDetail])
     // get user cookie token
     const getGitHubUserToken = async () => {
-        const result = await axios.get("/api/github/token");
-        setToken(result.data.token);
+        try {
+            setisLoading(true)
+            const result = await axios.get("/api/github/token");
+            setToken(result.data.token);
+        } catch (error) {
+        }
+        finally {
+            setisLoading(false)
+        }
     }
     // add repo controller
     const onAddRepo = async () => {
         window.location.href = "/api/github";
     }
 
-    const handleRefreshPage = (refresh: boolean) => { };
+    // get user repo
+    const getUserRepoList = async () => {
+        try {
+            setisLoading(true)
+            const result = await axios.get(`/api/user-repo?userId=${userDetail?.id}`);
+            setuserRepoList(result.data)
+        } catch (error) {
+        }
+        finally {
+            setisLoading(false)
+        }
+    };
+
+    const handleRefreshPage = (refresh: boolean) => {
+        if (refresh) {
+            getUserRepoList();
+        }
+    };
     return (
         <div>
             <div className='flex items-center justify-between'>
@@ -51,11 +84,16 @@ const WorkspaceBody = () => {
                         <RepoDialog setRefreshPage={handleRefreshPage} />
                 }
             </Card>
-            <Card>
-                <CardContent>
-                    <EmptyWorkspace />
-                </CardContent>
-            </Card>
+            {
+                userRepoList.length > 0 ?
+                    <UserRepoList RepoList={userRepoList} /> :
+                    <Card>
+                        <CardContent>
+                            {isLoading ? <LoadingSection /> :
+                                <EmptyWorkspace />}
+                        </CardContent>
+                    </Card>
+            }
         </div>
     )
 }

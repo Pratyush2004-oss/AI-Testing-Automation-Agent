@@ -1,13 +1,13 @@
 import { db } from "@/db";
 import { repositories } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     const { id, userId, name, full_name, owner, description, isPrivate, html_url, updated_at, language, default_branch } = await req.json();
 
     // check if the repo already exists in the database
-    const repo = await db.select().from(repositories).where(eq(repositories.repoId, id)).limit(1);
+    const repo = await db.select().from(repositories).where(and(eq(repositories.repoId, id), eq(repositories.userId, userId))).limit(1);
     if (repo.length > 0) return NextResponse.json({ error: "Repo already exists" }, { status: 400 });
 
     const response = await db.insert(repositories).values({

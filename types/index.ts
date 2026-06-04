@@ -25,3 +25,22 @@ export type USERREPOTYPE = {
     userId: number,
     repoId: number
 }
+
+export type TESTCASESTYPE = {
+    branch: string
+    browserbaseScript: string | null
+    createdAt: string
+    description: string
+    expectedResult: string
+    id: number
+    priority: "low" | "medium" | "high"
+    repoId: number
+    repoName: string
+    repoOwner: string
+    status: string
+    targetFiles: string[]
+    targetRoute: string
+    title: string
+    type: string
+    userId: number
+}

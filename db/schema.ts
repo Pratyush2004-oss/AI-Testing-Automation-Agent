@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, integer, jsonb, pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -23,6 +23,29 @@ export const repositories = pgTable("repositories", {
   default_branch: text("default_branch")
 })
 
+export const TestCaseTable = pgTable("testcases", {
+  id: serial("id").primaryKey(),
+  // repo / project details
+  userId: integer("user_id").references(() => users.id).notNull(),
+  repoId: integer("repo_id").notNull(),
+  repoName: varchar("repoName", { length: 255 }).notNull(),
+  repoOwner: varchar("repo_owner", { length: 255 }).notNull(),
+  branch: varchar("branch", { length: 100 }).notNull().default("main"),
+  // main test cases data
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  type: varchar("type", { length: 100 }).notNull(),
+  priority: varchar("priority", { length: 100 }).notNull(),
+
+  // important metadata for second step: BrowserBase script generation
+  targetRoute: varchar("target_route", { length: 500 }),
+  targetFiles: jsonb("target_files").$type<string[]>().default([]),
+  expectedResult: jsonb("expected_result"),
+
+  browserbaseScript: text("browserbase_script"),
+  status: varchar("status", { length: 100 }).notNull().default("generated"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;

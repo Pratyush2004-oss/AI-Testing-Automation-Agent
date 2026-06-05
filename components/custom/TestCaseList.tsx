@@ -5,10 +5,11 @@ import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
 import { useState } from 'react'
+import SettingsDialog from './SettingsDialog'
 
 const TestCaseList = ({ TestCaseList, handleRefresh }: { TestCaseList: TESTCASESTYPE[], handleRefresh: (repoId: number) => Promise<void> }) => {
     const [selectedTestCases, setselectedTestCases] = useState<TESTCASESTYPE[]>([]);
-    const handleSelectedTestCase = (check:boolean | string, testCase: TESTCASESTYPE) => {
+    const handleSelectedTestCase = (check: boolean | string, testCase: TESTCASESTYPE) => {
         if (typeof check === 'boolean') {
             if (check) {
                 setselectedTestCases([...selectedTestCases, testCase]);
@@ -27,9 +28,9 @@ const TestCaseList = ({ TestCaseList, handleRefresh }: { TestCaseList: TESTCASES
                 {TestCaseList.map((item) => (
                     <div key={item.id} className='p-4 border-b flex items-center justify-between'>
                         <div className='flex items-center gap-2'>
-                            <Checkbox 
-                            checked={selectedTestCases.some((testCase) => testCase.id === item.id)}
-                            onCheckedChange={(check) => handleSelectedTestCase(check, item)}/>
+                            <Checkbox
+                                checked={selectedTestCases.some((testCase) => testCase.id === item.id)}
+                                onCheckedChange={(check) => handleSelectedTestCase(check, item)} />
                             <div>
                                 <h2 className='text-base font-bold'>{item.title}</h2>
                                 <p className='text-xs text-gray-500'>{item.description}</p>
@@ -38,7 +39,7 @@ const TestCaseList = ({ TestCaseList, handleRefresh }: { TestCaseList: TESTCASES
                         <div className='gap-4 flex'>
                             <Badge variant={'secondary'}>{item.type}</Badge>
                             <Badge variant={'secondary'}>{item.status}</Badge>
-                            <Button size={'icon'} variant={'outline'}><Settings /></Button>
+                            <SettingsDialog TestCase={item} refreshList={() => handleRefresh(item.repoId)} />
                         </div>
                     </div>
                 ))}

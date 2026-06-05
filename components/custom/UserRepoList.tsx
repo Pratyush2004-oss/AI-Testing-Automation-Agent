@@ -1,5 +1,5 @@
 import { TESTCASESTYPE, USERREPOTYPE } from '@/types'
-import { CheckCircle2, ListChecks, Loader, Sparkle, Sparkles, TrendingUp, XCircle } from 'lucide-react'
+import { CheckCircle2, Globe2Icon, ListChecks, Loader, Settings2, Sparkle, Sparkles, TrendingUp, XCircle } from 'lucide-react'
 import Image from 'next/image'
 import React, { useContext, useState } from 'react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
@@ -9,8 +9,9 @@ import { toast } from 'sonner'
 import { UserDetailContext } from '@/context/UserDetailContext'
 import LoadingSection from './LoadingSection'
 import TestCaseList from './TestCaseList'
+import RepoSettings from './RepoSettings'
 
-const UserRepoList = ({ RepoList }: { RepoList: USERREPOTYPE[] }) => {
+const UserRepoList = ({ RepoList, handleRefresh }: { RepoList: USERREPOTYPE[], handleRefresh: () => Promise<void> }) => {
     const [testData, settestData] = useState({
         totalTests: 0,
         passedTests: 0,
@@ -95,6 +96,14 @@ const UserRepoList = ({ RepoList }: { RepoList: USERREPOTYPE[] }) => {
                         </AccordionTrigger>
                         <AccordionContent>
                             <div className='p-4 space-y-5'>
+                                <div className='bg-gray-800 p-3 border rounded-xl flex items-center justify-between'>
+                                    <div className='flex gap-2 items-center'>
+                                        <Globe2Icon />
+                                        <h2>Target Domain</h2>
+                                        <h2 className='border p-1 border-gray-50/50 rounded-lg'>{repo.targetDomain}</h2>
+                                    </div>
+                                    <RepoSettings repo={repo} handleRefresh={handleRefresh}/>
+                                </div>
                                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
                                     <StatusCard
                                         title="Total Tests"

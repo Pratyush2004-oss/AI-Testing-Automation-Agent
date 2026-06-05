@@ -86,7 +86,7 @@ const WorkspaceBody = () => {
             </Card>
             {
                 userRepoList.length > 0 ?
-                    <UserRepoList RepoList={userRepoList} /> :
+                    <UserRepoList RepoList={userRepoList} handleRefresh={() => getUserRepoList()} /> :
                     <Card>
                         <CardContent>
                             {isLoading ? <LoadingSection /> :

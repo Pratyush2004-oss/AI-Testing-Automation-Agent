@@ -23,7 +23,9 @@ export type USERREPOTYPE = {
     default_branch: string,
     owner: string,
     userId: number,
-    repoId: number
+    repoId: number,
+    targetDomain: string,
+    globalInstructions: string | null
 }
 
 export type TESTCASESTYPE = {
@@ -42,5 +44,6 @@ export type TESTCASESTYPE = {
     targetRoute: string
     title: string
     type: string
-    userId: number
+    userId: number,
+    targetDomain: string
 }

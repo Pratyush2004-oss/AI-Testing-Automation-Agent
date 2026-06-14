@@ -8,6 +8,16 @@ export const users = pgTable("users", {
   credits: integer("credits").notNull().default(2000),
 });
 
+export const creditPurchases = pgTable("credit_purchases", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  stripeSessionId: text("stripe_session_id").notNull().unique(),
+  packageId: text("package_id").notNull(),
+  credits: integer("credits").notNull(),
+  amountCents: integer("amount_cents").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const repositories = pgTable("repositories", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
@@ -50,6 +60,9 @@ export const TestCaseTable = pgTable("testcases", {
 
   // domain name
   targetDomain: varchar("domain", { length: 255 }).default("http://localhost:3000"),
+  logs: text("logs").array().$type<string[]>().default([]),
+  sessionId: varchar("session_id", { length: 255 }),
+  sessionUrl: varchar("session_url", { length: 255 }),
 })
 
 export type User = typeof users.$inferSelect;

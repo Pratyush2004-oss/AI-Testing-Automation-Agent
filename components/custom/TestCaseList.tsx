@@ -1,14 +1,16 @@
 'use client'
-import { TESTCASESTYPE } from '@/types'
+import { TESTCASESTYPE, USERREPOTYPE } from '@/types'
 import { Play, RefreshCcw, Settings } from 'lucide-react'
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
 import { useState } from 'react'
 import SettingsDialog from './SettingsDialog'
+import TestExecutionModal from './TestExecutionModal'
 
-const TestCaseList = ({ TestCaseList, handleRefresh }: { TestCaseList: TESTCASESTYPE[], handleRefresh: (repoId: number) => Promise<void> }) => {
+const TestCaseListComp = ({ TestCaseList, handleRefresh, repository }: { TestCaseList: TESTCASESTYPE[], handleRefresh: (repoId: number) => Promise<void>, repository: USERREPOTYPE }) => {
     const [selectedTestCases, setselectedTestCases] = useState<TESTCASESTYPE[]>([]);
+    const [isModalOpen, setisModalOpen] = useState(false);
     const handleSelectedTestCase = (check: boolean | string, testCase: TESTCASESTYPE) => {
         if (typeof check === 'boolean') {
             if (check) {
@@ -38,18 +40,32 @@ const TestCaseList = ({ TestCaseList, handleRefresh }: { TestCaseList: TESTCASES
                         </div>
                         <div className='gap-4 flex'>
                             <Badge variant={'secondary'}>{item.type}</Badge>
-                            <Badge variant={'secondary'}>{item.status}</Badge>
+                            <Badge variant={'secondary'}
+                                className={`${item.status === 'failed' ? 'bg-red-600' :
+                                    item.status === 'generated' || item.status === 'running' ? 'bg-yellow-600' :
+                                        'bg-green-600'}`}>{item.status}</Badge>
                             <SettingsDialog TestCase={item} refreshList={() => handleRefresh(item.repoId)} />
                         </div>
                     </div>
                 ))}
                 <div className='p-4 items-center justify-between flex bg-gray-800 rounded-b-xl'>
                     <h2 className='font-bold'>Run Selected Test Cases</h2>
-                    <Button disabled={selectedTestCases.length === 0} variant={'default'}><Play className='mr-2' size={16} /> Run Selected</Button>
+                    <Button disabled={selectedTestCases.length === 0} variant={'default'}
+                        onClick={() => setisModalOpen(true)}>
+                        <Play className='mr-2' size={16} /> Run Selected</Button>
                 </div>
             </div>
+            {isModalOpen &&
+                <TestExecutionModal
+                    isOpen={isModalOpen}
+                    onClose={() => setisModalOpen(false)}
+                    testCases={selectedTestCases}
+                    repository={repository}
+                    refresh= {() => handleRefresh(selectedTestCases[0].repoId)}
+                />
+            }
         </div>
     )
 }
 
-export default TestCaseList
+export default TestCaseListComp

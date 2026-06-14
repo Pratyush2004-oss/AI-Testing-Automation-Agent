@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI, Type } from "@google/genai";
 import { db } from "@/db";
-import { TestCaseTable } from "@/db/schema";
+import { TestCaseTable, users } from "@/db/schema";
 import { cookies } from "next/headers";
+import { eq, sql } from "drizzle-orm";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY!,
@@ -343,6 +344,14 @@ Important rules:
         }))
       )
       .returning();
+
+      // if test cases generated successfully, then deduct the credits from the user account
+      if (insertedTestCases.length > 0) {
+        await db
+          .update(users)
+          .set({ credits: sql`${users.credits} - 200` })
+          .where(eq(users.id, userId));
+      }
 
     return NextResponse.json({
       success: true,

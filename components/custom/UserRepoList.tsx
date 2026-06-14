@@ -1,15 +1,15 @@
+import { UserDetailContext } from '@/context/UserDetailContext'
 import { TESTCASESTYPE, USERREPOTYPE } from '@/types'
-import { CheckCircle2, Globe2Icon, ListChecks, Loader, Settings2, Sparkle, Sparkles, TrendingUp, XCircle } from 'lucide-react'
+import axios, { AxiosError } from 'axios'
+import { CheckCircle2, Globe2Icon, ListChecks, Loader, Sparkles, TrendingUp, XCircle } from 'lucide-react'
 import Image from 'next/image'
 import React, { useContext, useState } from 'react'
+import { toast } from 'sonner'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion'
 import { Button } from '../ui/button'
-import axios, { AxiosError } from 'axios'
-import { toast } from 'sonner'
-import { UserDetailContext } from '@/context/UserDetailContext'
 import LoadingSection from './LoadingSection'
-import TestCaseList from './TestCaseList'
 import RepoSettings from './RepoSettings'
+import TestCaseListComp from './TestCaseList'
 
 const UserRepoList = ({ RepoList, handleRefresh }: { RepoList: USERREPOTYPE[], handleRefresh: () => Promise<void> }) => {
     const [testData, settestData] = useState({
@@ -102,7 +102,7 @@ const UserRepoList = ({ RepoList, handleRefresh }: { RepoList: USERREPOTYPE[], h
                                         <h2>Target Domain</h2>
                                         <h2 className='border p-1 border-gray-50/50 rounded-lg'>{repo.targetDomain}</h2>
                                     </div>
-                                    <RepoSettings repo={repo} handleRefresh={handleRefresh}/>
+                                    <RepoSettings repo={repo} handleRefresh={handleRefresh} />
                                 </div>
                                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
                                     <StatusCard
@@ -135,7 +135,11 @@ const UserRepoList = ({ RepoList, handleRefresh }: { RepoList: USERREPOTYPE[], h
                                 isFetching === repo.repoId ? (
                                     <LoadingSection />
                                 ) : TestCasesList.length > 0 ? (
-                                    <TestCaseList TestCaseList={TestCasesList} handleRefresh={(repoId) => fetchRepoTestCases(repoId)} />
+                                    <TestCaseListComp
+                                        repository={repo}
+                                        TestCaseList={TestCasesList}
+                                        handleRefresh={(repoId) => fetchRepoTestCases(repoId)}
+                                    />
                                 ) : (
                                     <div className='flex flex-col sm:flex-row items-center justify-between'>
                                         <div>

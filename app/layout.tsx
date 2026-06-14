@@ -5,8 +5,8 @@ import Provider from "./provider";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "Next.js Premium Startup Boilerplate",
-  description: "Created using the ultimate interactive Next.js stack generator CLI.",
+  title: "AI Testing Automation Agent",
+  description: "AI-powered test generation, execution, and workspace management for modern QA teams.",
 };
 
 export default function RootLayout({
@@ -15,13 +15,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning style={{ margin: 0, padding: 0 }}>
+    <html lang="en" suppressHydrationWarning className="dark">
+      <body suppressHydrationWarning style={{ margin: 0, padding: 0 }} className="bg-background text-foreground">
         <ClerkProvider>
           <Provider>
             {children}
           </Provider>
-          <Toaster/>
+          <Toaster />
         </ClerkProvider>
       </body>
     </html>

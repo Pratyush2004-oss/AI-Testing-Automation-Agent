@@ -45,5 +45,8 @@ export type TESTCASESTYPE = {
     title: string
     type: string
     userId: number,
-    targetDomain: string
+    targetDomain: string,
+    logs: string[],
+    sessionId: string | null,
+    sessionUrl: string | null
 }

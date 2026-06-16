@@ -5,9 +5,6 @@ import { TestCaseTable, users } from "@/db/schema";
 import { cookies } from "next/headers";
 import { eq, sql } from "drizzle-orm";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY!,
-});
 
 const ALLOWED_EXTENSIONS = [
   ".js",
@@ -143,6 +140,9 @@ async function readGithubFile({
 
 export async function POST(req: NextRequest) {
   try {
+    const ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY!,
+    });
     const body = await req.json();
     const cookieStore = await cookies();
     const githubToken = cookieStore.get("gh-token")?.value

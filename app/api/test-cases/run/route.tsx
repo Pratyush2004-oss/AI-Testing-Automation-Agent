@@ -6,12 +6,7 @@ import { eq, sql } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { Browserbase } from "@browserbasehq/sdk";
 import { chromium } from "playwright-core";
-const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY!,
-});
-const bb = new Browserbase({
-    apiKey: process.env.BROWSERBASE_API_KEY!,
-});
+
 async function readGithubFile({
     owner,
     repo,
@@ -95,6 +90,9 @@ export async function POST(req: NextRequest) {
 
         // 2. Generate script using Gemini if forced, or if no script is cached
         if (forceRegenerate) {
+            const ai = new GoogleGenAI({
+                apiKey: process.env.GEMINI_API_KEY!,
+            });
             const cookiesStore = await cookies();
             const githubToken = cookiesStore.get("gh-token")?.value;
 
@@ -274,6 +272,10 @@ export async function POST(req: NextRequest) {
         let browser: any = null;
 
         try {
+            const bb = new Browserbase({
+                apiKey: process.env.BROWSERBASE_API_KEY!,
+            });
+
             // 4. Create Browserbase Session
             session = await bb.sessions.create({
                 projectId: process.env.BROWSERBASE_PROJECT_ID!,

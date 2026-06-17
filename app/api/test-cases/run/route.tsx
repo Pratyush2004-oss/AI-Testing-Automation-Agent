@@ -5,7 +5,7 @@ import { TestCaseTable, repositories, users } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { Browserbase } from "@browserbasehq/sdk";
-import { chromium } from "playwright-core";
+import { chromium } from "playwright";
 
 async function readGithubFile({
     owner,

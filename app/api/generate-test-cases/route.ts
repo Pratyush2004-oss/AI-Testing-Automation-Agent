@@ -138,6 +138,49 @@ async function readGithubFile({
   };
 }
 
+async function generateContentWithRetry(
+  ai: any,
+  options: {
+    model?: string;
+    contents: any;
+    config?: any;
+  },
+  maxRetries = 3,
+  fallbackModels = ["gemini-2.0-flash", "gemini-1.5-flash"]
+) {
+  const modelsToTry = [options.model || "gemini-2.5-flash", ...fallbackModels];
+  let lastError = null;
+
+  for (const model of modelsToTry) {
+    let attempt = 0;
+    while (attempt < maxRetries) {
+      try {
+        console.log(`Calling generateContent with model ${model} (attempt ${attempt + 1}/${maxRetries})...`);
+        const response = await ai.models.generateContent({
+          ...options,
+          model: model,
+        });
+        return response;
+      } catch (err: any) {
+        lastError = err;
+        attempt++;
+        const isUnavailable = err.status === "UNAVAILABLE" || err.message?.includes("503") || err.message?.includes("demand");
+        const isRateLimit = err.status === "RESOURCE_EXHAUSTED" || err.message?.includes("429") || err.message?.includes("quota");
+
+        if ((isUnavailable || isRateLimit) && attempt < maxRetries) {
+          const delay = Math.pow(2, attempt) * 1000;
+          console.warn(`Gemini API returned temporary error (${err.message}). Retrying in ${delay}ms...`);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        } else {
+          console.error(`Gemini API failed for model ${model} on attempt ${attempt}:`, err);
+          break; // Try next fallback model
+        }
+      }
+    }
+  }
+  throw lastError || new Error("Gemini API request failed after retrying.");
+}
+
 export async function POST(req: NextRequest) {
   try {
     const ai = new GoogleGenAI({
@@ -244,7 +287,7 @@ Important rules:
 - Return only valid JSON.
 `;
 
-    const response = await ai.models.generateContent({
+    const response = await generateContentWithRetry(ai, {
       model: "gemini-2.5-flash",
       contents: prompt,
       config: {
